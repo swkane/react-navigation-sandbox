@@ -15,11 +15,25 @@ class LogoTitle extends React.Component {
 
 class HomeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
+    const params = navigation.state.params || {};
+
     return {
+      headerLeft: (
+        <Button
+          onPress={() => navigation.navigate("MyModal")}
+          title="Info"
+          color="#fff"
+        />
+      ),
       headerTitle: <LogoTitle />,
       headerRight: (
         <Button
-          onPress={navigation.getParam("increaseCount")}
+          onPress={
+            // this conditional is to remove the warning of a null onPress upon initial render
+            navigation.state.params
+              ? navigation.getParam("increaseCount")
+              : () => {}
+          }
           title="+1"
           color="#fff"
         />
@@ -50,6 +64,20 @@ class HomeScreen extends React.Component {
               otherParams: "Details"
             })
           }
+        />
+      </View>
+    );
+  }
+}
+
+class ModalScreen extends React.Component {
+  render() {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Text style={{ fontSize: 30 }}>This is a modal!</Text>
+        <Button
+          onPress={() => this.props.navigation.goBack()}
+          title="Dismiss"
         />
       </View>
     );
@@ -99,7 +127,7 @@ class DetailsScreen extends React.Component {
   }
 }
 
-const RootStack = createStackNavigator(
+const MainStack = createStackNavigator(
   {
     Home: HomeScreen,
     Details: DetailsScreen
@@ -115,6 +143,21 @@ const RootStack = createStackNavigator(
         fontWeight: "bold"
       }
     }
+  }
+);
+
+const RootStack = createStackNavigator(
+  {
+    Main: {
+      screen: MainStack
+    },
+    MyModal: {
+      screen: ModalScreen
+    }
+  },
+  {
+    mode: "modal",
+    headerMode: "none"
   }
 );
 
